@@ -1,0 +1,9 @@
+import { z } from "zod";
+
+import { Server } from "@prisma/client";
+
+import { CreateChannelSchema } from "./shema";
+import { ActionState } from "@/lib/create-safe-action";
+
+export type InputType = z.infer<typeof CreateChannelSchema>;
+export type OutputType = ActionState<InputType, Server>;

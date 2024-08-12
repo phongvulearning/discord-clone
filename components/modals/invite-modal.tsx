@@ -9,14 +9,19 @@ import { CheckIcon, Copy, RefreshCcw } from "lucide-react";
 import { useOrigin } from "@/hooks/use-origin";
 import { useState } from "react";
 import { useAction } from "@/hooks/use-action";
-import { updateServer } from "@/actions/update-server";
+import { refreshInviteCodeServer } from "@/actions/refresh-invite-code-server";
+import { toast } from "sonner";
 
 export const InviteModal = () => {
   const origin = useOrigin();
 
   const { isOpen, onClose, type, data, onOpen } = useModal();
-  const { execute, isLoading } = useAction(updateServer, {
+  const { execute, isLoading } = useAction(refreshInviteCodeServer, {
+    onError() {
+      toast.error("Failed to refresh invite link");
+    },
     onSuccess(data) {
+      toast.success("Invite link refreshed successfully");
       onOpen("invite", { server: data });
     },
   });
@@ -33,6 +38,7 @@ export const InviteModal = () => {
     setCopied(true);
     setTimeout(() => {
       setCopied(false);
+      toast.success("Invite link copied successfully");
     }, 1000);
   };
 

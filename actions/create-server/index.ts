@@ -2,7 +2,6 @@
 
 import { db } from "@/lib/db";
 
-import { auth } from "@clerk/nextjs/server";
 import { InputType, OutputType } from "./type";
 import { createSafeAction } from "@/lib/create-safe-action";
 import { CreateServerSchema } from "./shema";
@@ -52,6 +51,7 @@ const handler = async (validatedData: InputType): Promise<OutputType> => {
     };
   }
 
+  revalidatePath("/servers");
   return { data: server };
 };
 

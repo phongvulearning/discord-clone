@@ -27,20 +27,22 @@ import { FileUpload } from "@/components/file-upload";
 import { CreateServerSchema } from "@/actions/create-server/shema";
 import { useAction } from "@/hooks/use-action";
 import { createServer } from "@/actions/create-server";
-import { useRouter } from "next/navigation";
 import { useModal } from "@/hooks/use-modal-store";
+import { toast } from "sonner";
 
 export const CreateServerModal = () => {
-  const router = useRouter();
   const { isOpen, onClose, type } = useModal();
 
   const isModalOpen = isOpen && type === "createServer";
 
-  const { execute } = useAction(createServer, {
-    onSuccess(data) {
-      console.log(data);
+  const { execute, isLoading } = useAction(createServer, {
+    onError() {
+      toast.error("Failed to create server");
+    },
+    onSuccess() {
+      toast.success("Server created successfully");
       form.reset();
-      router.refresh();
+      onClose();
     },
   });
 
@@ -51,8 +53,6 @@ export const CreateServerModal = () => {
       imageUrl: "",
     },
   });
-
-  const isLoading = form.formState.isSubmitting;
 
   const onSubmit = useCallback(
     (values: z.infer<typeof CreateServerSchema>) => {
@@ -125,7 +125,7 @@ export const CreateServerModal = () => {
               <Button
                 type="submit"
                 className="w-full"
-                disabled={isLoading}
+                disabled={isLoading || !form.formState.isValid}
                 variant="primary"
               >
                 Create

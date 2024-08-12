@@ -28,12 +28,16 @@ import { CreateServerSchema } from "@/actions/create-server/shema";
 import { useAction } from "@/hooks/use-action";
 import { createServer } from "@/actions/create-server";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export const InitialModal = () => {
   const router = useRouter();
-  const { execute } = useAction(createServer, {
-    onSuccess(data) {
-      console.log(data);
+  const { execute, isLoading } = useAction(createServer, {
+    onError() {
+      toast.error("Failed to create server");
+    },
+    onSuccess() {
+      toast.success("Server created successfully");
       form.reset();
       router.refresh();
     },
@@ -52,8 +56,6 @@ export const InitialModal = () => {
       imageUrl: "",
     },
   });
-
-  const isLoading = form.formState.isSubmitting;
 
   const onSubmit = useCallback(
     (values: z.infer<typeof CreateServerSchema>) => {

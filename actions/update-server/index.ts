@@ -5,8 +5,8 @@ import { db } from "@/lib/db";
 import { InputType, OutputType } from "./type";
 import { createSafeAction } from "@/lib/create-safe-action";
 import { UpdateServerSchema } from "./shema";
-import { v4 as uuidv4 } from "uuid";
 import { currentProfile } from "@/lib/current-profile";
+import { revalidatePath } from "next/cache";
 
 const handler = async (validatedData: InputType): Promise<OutputType> => {
   const profile = await currentProfile();
@@ -17,12 +17,12 @@ const handler = async (validatedData: InputType): Promise<OutputType> => {
     };
   }
 
-  // Create a server
-  const { serverId } = validatedData;
+  // Update a server
+  const { name, imageUrl, serverId } = validatedData;
 
-  if (!serverId) {
+  if (!name || !imageUrl) {
     return {
-      error: "Invalid data. Failed to update server",
+      error: "Invalid data. Failed to create server",
     };
   }
 
@@ -32,7 +32,8 @@ const handler = async (validatedData: InputType): Promise<OutputType> => {
     server = await db.server.update({
       where: { id: serverId, profileId: profile.id },
       data: {
-        inviteCode: uuidv4(),
+        name,
+        imageUrl,
       },
     });
   } catch (error) {
@@ -41,6 +42,7 @@ const handler = async (validatedData: InputType): Promise<OutputType> => {
     };
   }
 
+  revalidatePath(`/servers/${server.id}`);
   return { data: server };
 };
 

@@ -1,18 +1,15 @@
-import { ServerSidebar } from "@/components/server/server-sidebar";
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
-export default async function ServerIdLayout({
-  children,
-  params,
-}: {
-  children: React.ReactNode;
+interface ServerIdPageProps {
   params: {
     serverId: string;
   };
-}) {
+}
+
+const ServerIdPage = async ({ params }: ServerIdPageProps) => {
   const { redirectToSignIn } = auth();
   const profile = await currentProfile();
 
@@ -29,18 +26,25 @@ export default async function ServerIdLayout({
         },
       },
     },
+    include: {
+      channels: {
+        where: {
+          name: "general",
+        },
+        orderBy: {
+          createdAt: "asc",
+        },
+      },
+    },
   });
 
-  if (!server) {
-    return redirect("/");
+  const initialServer = server?.channels?.[0];
+
+  if (initialServer?.name !== "general") {
+    return null;
   }
 
-  return (
-    <div className="h-full">
-      <div className="hidden md:!flex h-full w-60 z-20 flex-col inset-y-0 fixed">
-        <ServerSidebar serverId={params?.serverId} />
-      </div>
-      <main className="h-full md:pl-60">{children}</main>
-    </div>
-  );
-}
+  return redirect(`/servers/${params.serverId}/channels/${initialServer.id}`);
+};
+
+export default ServerIdPage;
