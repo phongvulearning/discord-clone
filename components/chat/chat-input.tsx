@@ -24,10 +24,10 @@ export const ChatInput = ({ query, name, type }: ChatInputProps) => {
   const { serverId, channelId } = query;
 
   const { execute, isLoading } = useAction(sendMessage, {
-    onSuccess(data) {
+    onSuccess: async (data) => {
       form.reset();
     },
-    onError(error) {
+    onError() {
       form.reset();
       toast.error("Failed to send message");
     },

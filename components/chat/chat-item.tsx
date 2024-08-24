@@ -33,7 +33,6 @@ interface ChatItemProps {
   deleted: boolean;
   currentMember: Member;
   isUpdated: boolean;
-  socketUrl: string;
   socketQuery: Record<string, string>;
 }
 
@@ -46,7 +45,6 @@ export const ChatItem = ({
   deleted,
   currentMember,
   isUpdated,
-  socketUrl,
   socketQuery,
 }: ChatItemProps) => {
   const router = useRouter();

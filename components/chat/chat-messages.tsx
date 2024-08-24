@@ -4,54 +4,54 @@ import { Member } from "@prisma/client";
 import { ChatWelcome } from "./chat-welcome";
 import { Loader2, ServerCrash } from "lucide-react";
 import { useChatQuery } from "@/hooks/use-chat-query";
-import { Fragment, useRef } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import { ChatItem } from "./chat-item";
 import { format } from "date-fns";
 import { DATE_FORMAT } from "@/lib/const";
 import { MessageWithMemberWithProfile } from "@/type";
-import { useChatSocket } from "@/hooks/use-chat-socket";
+import { useChatScroll } from "@/hooks/use-chat-scroll";
 
 interface ChatMessagesProps {
   name: string;
   member: Member;
   chatId: string;
-  socketUrl: string;
   socketQuery: Record<string, string>;
   paramKey: "channelId" | "conversationId";
   paramValue: string;
   type: "channel" | "conversation";
+  apiUrl: string;
 }
 
 export const ChatMessages = ({
   name,
   socketQuery,
-  socketUrl,
   paramKey,
   type,
   paramValue,
   chatId,
   member,
+  apiUrl,
 }: ChatMessagesProps) => {
   const queryKey = `chat:${chatId}`;
-  const addKey = `chat:${chatId}:messages`;
-  const updateKey = `chat:${chatId}:messages:update`;
 
   const chatRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  useChatSocket({
-    queryKey,
-    addKey,
-    updateKey,
-  });
-
   const { data, status, hasNextPage, fetchNextPage, isFetchingNextPage } =
     useChatQuery({
       queryKey,
-      apiUrl: `/api/messages`,
+      apiUrl,
       paramKey,
       paramValue,
     });
+
+  useChatScroll({
+    chatRef,
+    bottomRef,
+    shouldLoadMore: !isFetchingNextPage && !!hasNextPage,
+    loadMore: fetchNextPage,
+    count: data?.pages?.[0]?.items?.length ?? 0,
+  });
 
   if (status === "pending") {
     return (
@@ -101,7 +101,6 @@ export const ChatMessages = ({
               <ChatItem
                 {...message}
                 key={message?.id}
-                socketUrl={socketUrl}
                 currentMember={member}
                 socketQuery={socketQuery}
                 isUpdated={message?.updatedAt !== message?.createdAt}

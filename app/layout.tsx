@@ -7,7 +7,6 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { Inter as FontSans } from "next/font/google";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { ModalProvider } from "@/providers/modal-provider";
-import { SocketProvider } from "@/providers/socket-provider";
 import { QueryProvider } from "@/providers/query-provider";
 
 const fontSans = FontSans({
@@ -40,13 +39,11 @@ export default function RootLayout({
             defaultTheme="system"
             storageKey="discord-theme"
           >
-            <SocketProvider>
-              <QueryProvider>
-                <Toaster />
-                <ModalProvider />
-                {children}
-              </QueryProvider>
-            </SocketProvider>
+            <QueryProvider>
+              <Toaster />
+              <ModalProvider />
+              {children}
+            </QueryProvider>
           </ThemeProvider>
         </body>
       </html>

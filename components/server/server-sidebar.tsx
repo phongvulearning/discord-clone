@@ -19,7 +19,9 @@ export const ServerSidebar = async ({ serverId }: ServerSidebarProps) => {
   const profile = await currentProfile();
 
   if (!profile) {
-    return redirect("/");
+    return null;
+
+    // return redirect("/");
   }
 
   const server = await db.server.findUnique({
@@ -44,7 +46,8 @@ export const ServerSidebar = async ({ serverId }: ServerSidebarProps) => {
   });
 
   if (!server) {
-    return redirect("/");
+    return null;
+    // return redirect("/");
   }
 
   const textChannels = server?.channels?.filter(

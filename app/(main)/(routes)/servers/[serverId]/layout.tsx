@@ -16,7 +16,9 @@ export default async function ServerIdLayout({
   const { redirectToSignIn } = auth();
   const profile = await currentProfile();
 
-  if (!profile) {
+  const profileId = profile?.id;
+
+  if (!profileId) {
     return redirectToSignIn();
   }
 
@@ -29,7 +31,7 @@ export default async function ServerIdLayout({
       id: params.serverId,
       members: {
         some: {
-          profileId: profile.id,
+          profileId,
         },
       },
     },

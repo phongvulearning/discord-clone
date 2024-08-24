@@ -7,7 +7,6 @@ import { createSafeAction } from "@/lib/create-safe-action";
 import { currentProfile } from "@/lib/current-profile";
 import { revalidatePath } from "next/cache";
 import { SendMessageSchema } from "./schema";
-import { io } from "socket.io-client";
 
 const handler = async (validatedData: InputType): Promise<OutputType> => {
   const profile = await currentProfile();
@@ -99,23 +98,12 @@ const handler = async (validatedData: InputType): Promise<OutputType> => {
         },
       },
     });
-
-    const channelKey = `chat:${channelId}:messages`;
-
-    const path = "/api/socket";
-    const SocketIO = io(process.env.NEXT_PUBLIC_SITE_URL!, {
-      path,
-      addTrailingSlash: false,
-    });
-
-    SocketIO.emit(channelKey, message);
   } catch (error) {
     return {
       error: "Failed to send message",
     };
   }
 
-  revalidatePath(`/servers`);
   return { data: message };
 };
 
