@@ -5,10 +5,9 @@ import { db } from "@/lib/db";
 import { InputType, OutputType } from "./type";
 import { createSafeAction } from "@/lib/create-safe-action";
 import { CreateChannelSchema } from "./shema";
-import { v4 as uuidv4 } from "uuid";
-import { MemberRole } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { currentProfile } from "@/lib/current-profile";
+import { MemberRole } from "@/prisma/generated/client";
 
 const handler = async (validatedData: InputType): Promise<OutputType> => {
   const profile = await currentProfile();
